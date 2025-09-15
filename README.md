@@ -212,3 +212,45 @@ Para que el flujo de trabajo de GitHub Actions funcione correctamente, debes con
 1. **AWS_ACCESS_ID**: Tu ID de clave de acceso de AWS.
 2. **AWS_ACCESS_KEY**: Tu clave de acceso secreta de AWS.
 3. **EC2_INSTANCE**: La dirección IP pública o el nombre DNS de tu instancia EC2.
+### ⚠️ IMPORTANTE: Flujo de Trabajo para el Desarrollo
+
+**Antes de crear un Pull Request, debes asegurarte de que todo funcione correctamente en tu fork:**
+
+1. **Trabaja en tu fork del repositorio**
+   - Haz fork de este repositorio a tu cuenta personal
+   - Clona tu fork localmente
+   - Realiza todos los cambios y desarrollo en tu repositorio personal
+
+2. **Configura tus propias variables de entorno**
+   - Configura los GitHub Secrets en tu fork para tus credenciales de AWS
+   - Asegúrate de que tu pipeline de CI/CD funcione con tus propias variables
+   - Prueba completamente el despliegue en tu entorno personal
+
+3. **Valida que todo funciona antes del PR**
+   - Ejecuta todos los tests localmente
+   - Verifica que el build funcione correctamente
+   - Confirma que el despliegue a tu AWS funcione sin errores
+   - Revisa que los GitHub Actions se ejecuten exitosamente en tu fork
+
+4. **Solo entonces, crea el Pull Request**
+   - Una vez que todo esté funcionando en tu fork, crea el PR al repositorio principal
+   - En el PR, incluye evidencia de que tu pipeline funciona (screenshots de GitHub Actions exitosos, enlaces a tu despliegue, etc.)
+   - Describe los cambios realizados y cómo probaste que funcionan
+
+### 🔒 Consideraciones de Seguridad
+
+- **NUNCA** incluyas credenciales o secrets en el código
+- Usa GitHub Secrets para todas las variables sensibles
+- Configura tus propios recursos de AWS para las pruebas
+- No compartas credenciales entre estudiantes
+
+### ✅ Checklist antes del Pull Request
+
+- [ ] La aplicación se construye sin errores en mi fork
+- [ ] Todos los tests pasan exitosamente
+- [ ] El pipeline de CI/CD se ejecuta sin fallos en GitHub Actions
+- [ ] La aplicación se despliega correctamente en mi AWS
+- [ ] He documentado los cambios realizados
+- [ ] He incluido evidencia de que todo funciona (capturas, enlaces)
+
+**Recuerda**: El objetivo es demostrar que puedes crear y mantener un pipeline de CI/CD funcional. La validación en tu propio fork es fundamental antes de solicitar la revisión del instructor.
