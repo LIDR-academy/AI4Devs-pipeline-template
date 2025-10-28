@@ -1,3 +1,263 @@
+# EN
+# LTI - Talent Tracking System
+
+This project is a full-stack application with a React frontend and an Express backend using Prisma as an ORM. The frontend is initiated with Create React App, and the backend is written in TypeScript.
+
+## Directory and File Explanation
+
+- `backend/`: Contains the server-side code written in Node.js.
+  - `src/`: Contains the source code for the backend.
+    - `index.ts`: The entry point for the backend server.
+    - `application/`: Contains the application logic.
+    - `domain/`: Contains the business logic.
+    - `infrastructure/`: Contains code that communicates with the database.
+    - `presentation/`: Contains code related to the presentation layer (such as controllers).
+    - `routes/`: Contains the route definitions for the API.
+    - `tests/`: Contains test files.
+  - `prisma/`: Contains the Prisma schema file for ORM.
+  - `tsconfig.json`: TypeScript configuration file.
+- `frontend/`: Contains the client-side code written in React.
+  - `src/`: Contains the source code for the frontend.
+  - `public/`: Contains static files such as the HTML file and images.
+  - `build/`: Contains the production-ready build of the frontend.
+- `.env`: Contains the environment variables.
+- `docker-compose.yml`: Contains the Docker Compose configuration to manage your application's services.
+- `README.md`: This file contains information about the project and instructions on how to run it.
+
+## Project Structure
+
+The project is divided into two main directories: `frontend` and `backend`.
+
+### Frontend
+
+The frontend is a React application, and its main files are located in the `src` directory. The `public` directory contains static assets, and the build directory contains the production `build` of the application.
+
+### Backend
+
+The backend is an Express application written in TypeScript. The `src` directory contains the source code, divided into several subdirectories:
+
+- `application`:Contains the application logic.
+- `domain`: Contains the domain models.
+- `infrastructure`: Contains code related to the infrastructure.
+- `presentation`: Contains code related to the presentation layer.
+- `routes`: Contains the application's routes.
+- `tests`: Contains the application's tests.
+
+The `prisma` directory contains the Prisma schema.
+
+You can find more information about good practices in the [good practices guide](./backend/ManifestoBuenasPracticas.md).
+
+The specifications for all API endpoints are in [api-spec.yaml](./backend/api-spec.yaml).
+
+The description and diagram of the data model are in [ModeloDatos.md](./backend/ModeloDatos.md).
+
+## First steps
+
+To get started with this project, follow these steps:
+
+1. Clone the repo
+2. install the dependencias for frontend and backend
+```sh
+cd frontend
+npm install
+
+cd ../backend
+npm install
+```
+3. Build the backend server
+```
+cd backend
+npm run build
+````
+4. Run the backend server
+```
+cd backend
+npm start
+```
+5. In a new terminal window, build the frontend server:
+```
+cd frontend
+npm run build
+```
+6. Start the frontend server
+```
+cd frontend
+npm start
+```
+
+The backend server will be running at http://localhost:3010, and the frontend will be available at http://localhost:3000.
+
+## Docker y PostgreSQL
+
+This project uses Docker to run a PostgreSQL database. Here's how to get it up and running:
+
+Install Docker on your machine if you haven't done so already. You can download it here.
+Navigate to the root directory of the project in your terminal.
+Run the following command to start the Docker container:
+```
+docker-compose up -d
+```
+
+This will start a PostgreSQL database in a Docker container. The -d flag runs the container in detached mode, meaning it runs in the background.
+
+To access the PostgreSQL database, you can use any PostgreSQL client with the following connection details:
+
+- Host: localhost
+- Port: 5432
+- User: postgres
+- Password: password
+- Database: mydatabase
+
+Please replace User, Password, and Database with the actual user, password, and database name specified in your .env file.
+
+To stop the Docker container, run the following command:
+```
+docker-compose down
+```
+
+To generate the database using Prisma, follow these steps:
+
+Make sure the `.env` file in the root directory of the backend contains the `DATABASE_URL` variable with the correct connection string to your PostgreSQL database. If it doesn't work, try replacing the full URL directly in `schema.prisma`, in the `url` variable.
+
+Open a terminal and navigate to the backend directory where the schema.prisma and seed.ts files are located.
+
+Run the following commands to generate the Prisma structure, apply migrations to your database, and populate it with example data:
+
+```
+npx prisma generate
+npx prisma migrate dev
+ts-node seed.ts
+```
+
+Once you have completed all the steps, you should be able to save new candidates, both via the web and API, view them in the database, and retrieve them via GET by ID.
+
+```
+POST http://localhost:3010/candidates
+{
+    "firstName": "Albert",
+    "lastName": "Saelices",
+    "email": "albert.saelices@gmail.com",
+    "phone": "656874937",
+    "address": "Calle Sant Dalmir 2, 5ºB. Barcelona",
+    "educations": [
+        {
+            "institution": "UC3M",
+            "title": "Computer Science",
+            "startDate": "2006-12-31",
+            "endDate": "2010-12-26"
+        }
+    ],
+    "workExperiences": [
+        {
+            "company": "Coca Cola",
+            "position": "SWE",
+            "description": "",
+            "startDate": "2011-01-13",
+            "endDate": "2013-01-17"
+        }
+    ],
+    "cv": {
+        "filePath": "uploads/1715760936750-cv.pdf",
+        "fileType": "application/pdf"
+    }
+}
+```
+
+## Setting up EC2 and GitHub Actions
+
+To run this project on an EC2 instance and ensure GitHub Actions works correctly, follow these steps:
+
+### EC2 Configuration
+
+1. **Create an EC2 Instance**:
+  - Log in to the AWS console and navigate to EC2.
+  - Launch a new instance using an Amazon Linux 2 or Ubuntu AMI.
+  -Make sure to select an appropriate instance type (e.g., `t2.micro` for testing).
+
+2.**Configure the Security Group**:
+  - Ensure that the security group associated with your instance allows traffic on the following ports:
+    - **22**: For SSH (remote access).
+    - **80**: For HTTP (if you are using Nginx or a web server).
+    - **8080**: For the backend (port where your application runs).
+  - You can add inbound rules in the security group to allow access from any IP (0.0.0.0/0) for development purposes, but consider restricting it in production.
+
+3. **Install Dependencies on EC2**:
+  - Connect to your EC2 instance via SSH:
+    ```
+    ssh -i your-key.pem ec2-user@your-ec2-public-ip
+    ```
+  - Install Node.js and npm:
+    ```
+    curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
+    sudo yum install -y nodejs
+    ```
+  - Install PM2 to manage your application:
+    ```
+    sudo npm install -g pm2
+    ```
+  - Install Nginx if you need it:
+    ```
+    sudo yum install -y nginx
+    ```
+
+4.**Configure Environment Variables**:
+  - Create a `.env` file in the backend root directory with the following variables:
+    ```
+    DATABASE_URL=postgresql://user:password@localhost:5432/mydatabase
+    ```
+  - Make sure to replace `user`, `password`, and `mydatabase` with the correct values.
+
+### Variables in GitHub Actions
+
+For the GitHub Actions workflow to work correctly, you must set the following variables in your repository's secrets:
+
+1. **AWS_ACCESS_ID**: Your AWS access key ID.
+2. **AWS_ACCESS_KEY**: Your AWS secret access key.
+3. **EC2_INSTANCE**: The public IP address or DNS name of your EC2 instance.
+### ⚠️ IMPORTANT: Development Workflow
+
+**Before creating a Pull Request, you should make sure that everything works correctly in your fork:**
+
+1. **Work on your fork of the repository**
+   - Fork this repository to your personal account
+   - Clone your fork locally
+   - Make all changes and development in your personal repository
+
+2. **Set your own environment variables**
+   - Configure GitHub Secrets on your fork for your AWS credentials
+   - Make sure your CI/CD pipeline works with your own variables
+   - Fully test the deployment in your personal environment
+
+3. **Validate that everything works before the PR**
+   - Run all tests locally
+   - Verify that the build works correctly
+   - Confirm that the deployment to your AWS works without errors
+   - Check that GitHub Actions run successfully on your fork
+
+4. **Only then, create the Pull Request**
+   - Once everything is working on your fork, create the PR to the main repository
+   - In the PR, include evidence that your pipeline is working (screenshots of successful GitHub Actions, links to your deployment, etc.)
+   - Describe the changes you made and how you tested that they work.
+
+### 🔒 Security Considerations
+
+- **NEVER** include credentials or secrets in your code
+- Use GitHub Secrets for all sensitive variables
+- Set up your own AWS resources for testing
+- Do not share credentials between students
+
+### ✅ Checklist before Pull Request
+
+- [ ] The application builds without errors on my fork
+- [ ] All tests pass successfully
+- [ ] The CI/CD pipeline runs without errors in GitHub Actions
+- [ ] The application is deployed successfully on my AWS
+- [ ] I have documented the changes made
+- [ ] I have included evidence that everything works (screenshots, links)
+
+**Remember**: The goal is to demonstrate that you can build and maintain a functional CI/CD pipeline. Validation on your own fork is critical before requesting instructor review.
+
+# ES
 # LTI - Sistema de Seguimiento de Talento
 
 Este proyecto es una aplicación full-stack con un frontend en React y un backend en Express usando Prisma como un ORM. El frontend se inicia con Create React App y el backend está escrito en TypeScript.
